@@ -724,6 +724,20 @@
       color: var(--muted);
       line-height: 1.6;
     }
+    .order-row-delete {
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-top: 0.6rem;
+      display: block;
+    }
+    .order-row-delete:hover { color: #c00; }
+
     .order-row-note {
       font-size: 0.78rem;
       font-style: italic;
@@ -1282,6 +1296,7 @@
         </div>
         <div class="order-row-detail">${o.address}, ${o.city} &nbsp;·&nbsp; ${o.price || ''}</div>
         ${o.note ? `<div class="order-row-note">"${o.note}"</div>` : ''}
+        <button class="order-row-delete" onclick="deleteOrder('${o.id}')">Verwijderen</button>
       </div>`;
     }).join('');
   }
@@ -1295,6 +1310,12 @@
       await batch.commit();
       toast('Bestellingen gewist.');
     } catch(e) { toast('Mislukt.'); }
+  }
+
+  async function deleteOrder(id) {
+    try {
+      await ORDERS_REF.doc(id).delete();
+    } catch(e) { toast('Verwijderen mislukt.'); }
   }
 
   // ── TABS ──
