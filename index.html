@@ -159,6 +159,15 @@
       line-height: 1.75;
       color: #555;
       max-width: 480px;
+      padding-bottom: 1.2rem;
+    }
+
+    .dish-tagline {
+      font-size: 0.8rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--muted);
+      max-width: 480px;
       padding-bottom: 2rem;
       border-bottom: 1px solid var(--border);
     }
@@ -1071,7 +1080,7 @@
         <div class="no-dish-wrap">
           <div class="no-dish-label">De keuken van Chef Barda</div>
           <div class="no-dish-title">Nog niets<br>op het vuur.</div>
-          <div class="no-dish-sub">Barda kookt als hij er zin in heeft.<br>Kom later nog eens kijken.</div>
+          <div class="no-dish-sub">Ik kook niet elke dag. Maar als ik kook, doe ik het goed. Bestel, geef je adres, en ik sta aan je deur. Vacuum verpakt, vers, gemaakt met iets te veel liefde en absoluut te veel boter.</div>
         </div>`;
       orderSection.style.display = 'none';
       return;
@@ -1083,6 +1092,7 @@
         <div class="dish-title">${dish.name}</div>
         <div class="dish-price-tag">${dish.price || ''}</div>
         <div class="dish-desc">${dish.description || ''}</div>
+        <div class="dish-tagline">Vacuum verpakt, vers, gemaakt met iets te veel liefde en absoluut te veel boter.</div>
         ${dish.accepting === false ? '<div class="closed-badge">Bestellingen gesloten</div>' : ''}
       </div>`;
 
