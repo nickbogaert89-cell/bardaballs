@@ -293,6 +293,14 @@
     .success-msg {
       padding: 2.5rem 1.5rem;
     }
+    .success-msg .bust-wrap {
+      margin-bottom: 1.5rem;
+    }
+    .success-msg .bust-wrap svg {
+      width: 140px;
+      height: auto;
+      display: block;
+    }
     .success-msg .s-label {
       font-size: 0.65rem;
       letter-spacing: 0.18em;
@@ -806,10 +814,6 @@
 
   <!-- Right column: dish photo -->
   <div class="home-right">
-    <div class="topbar">
-      <div class="logo">BardaBalls</div>
-      <button class="admin-link" onclick="showView('admin-gate')">Admin</button>
-    </div>
     <div class="hero-wrap" id="hero-wrap">
       <div class="hero-placeholder">🍽</div>
     </div>
@@ -919,6 +923,65 @@
   let pendingImageFile = null;
   let dishUnsub = null;
   let ordersUnsub = null;
+
+  // ── ROMAN BUST SVG ──
+  const ROMAN_BUST_SVG = `<svg viewBox="0 0 180 260" xmlns="http://www.w3.org/2000/svg">
+    <!-- Pedestal -->
+    <rect x="52" y="214" width="76" height="36" rx="2" fill="#b8b2ac"/>
+    <rect x="46" y="208" width="88" height="10" rx="1" fill="#ada7a1"/>
+    <!-- Toga / bust base -->
+    <path d="M28 212 C28 186 58 172 90 170 C122 172 152 186 152 212 Z" fill="#cdc7c1"/>
+    <path d="M42 206 C52 184 70 174 90 172" fill="none" stroke="#b8b2ac" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M138 206 C128 184 110 174 90 172" fill="none" stroke="#b8b2ac" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Neck -->
+    <path d="M79 170 C79 152 101 152 101 170 L99 174 C99 174 90 177 81 174 Z" fill="#d0cac4"/>
+    <!-- Head -->
+    <ellipse cx="90" cy="118" rx="36" ry="43" fill="#d6d0ca"/>
+    <!-- Hair -->
+    <path d="M54 120 C56 90 70 70 90 66 C110 70 124 90 126 120" fill="#c2bbb5"/>
+    <path d="M57 120 C59 93 72 76 90 72 C108 76 121 93 123 120" fill="#ccc6c0"/>
+    <path d="M62 112 C65 88 76 74 90 70" fill="none" stroke="#b5afa9" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+    <path d="M118 112 C115 88 104 74 90 70" fill="none" stroke="#b5afa9" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+    <!-- Laurel wreath leaves left -->
+    <ellipse cx="61" cy="94" rx="8" ry="4" fill="#8fad78" transform="rotate(-40 61 94)"/>
+    <ellipse cx="56" cy="106" rx="8" ry="4" fill="#9aba84" transform="rotate(-22 56 106)"/>
+    <ellipse cx="57" cy="118" rx="8" ry="4" fill="#8fad78" transform="rotate(-6 57 118)"/>
+    <!-- Laurel wreath leaves right -->
+    <ellipse cx="119" cy="94" rx="8" ry="4" fill="#8fad78" transform="rotate(40 119 94)"/>
+    <ellipse cx="124" cy="106" rx="8" ry="4" fill="#9aba84" transform="rotate(22 124 106)"/>
+    <ellipse cx="123" cy="118" rx="8" ry="4" fill="#8fad78" transform="rotate(6 123 118)"/>
+    <!-- Wreath centre -->
+    <ellipse cx="90" cy="80" rx="8" ry="5" fill="#9aba84"/>
+    <!-- Brow -->
+    <path d="M76 106 Q82 103 88 105" fill="none" stroke="#9c9690" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M92 105 Q98 103 104 106" fill="none" stroke="#9c9690" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Eyes -->
+    <ellipse cx="82" cy="114" rx="7" ry="5.5" fill="white"/>
+    <ellipse cx="82" cy="114" rx="4.5" ry="4.5" fill="#7a7470"/>
+    <ellipse cx="81" cy="113" rx="1.5" ry="1.5" fill="white"/>
+    <ellipse cx="98" cy="114" rx="7" ry="5.5" fill="white"/>
+    <ellipse cx="98" cy="114" rx="4.5" ry="4.5" fill="#7a7470"/>
+    <ellipse cx="97" cy="113" rx="1.5" ry="1.5" fill="white"/>
+    <!-- Nose -->
+    <path d="M90 120 L87 131 Q90 134 93 131 L90 120" fill="#c6c0ba"/>
+    <!-- Smile -->
+    <path d="M82 140 Q90 147 98 140" fill="none" stroke="#9a9490" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M83 138 Q90 135 97 138" fill="none" stroke="#aca6a0" stroke-width="1" stroke-linecap="round"/>
+    <!-- Cheek highlights -->
+    <ellipse cx="73" cy="128" rx="7" ry="5" fill="#e0dad4" opacity="0.45"/>
+    <ellipse cx="107" cy="128" rx="7" ry="5" fill="#e0dad4" opacity="0.45"/>
+    <!-- Thumbs up arm (right side) -->
+    <path d="M148 188 C162 174 170 154 167 136 C165 124 158 118 153 124 L150 133" fill="#cdc7c1" stroke="#c0bab4" stroke-width="1"/>
+    <!-- Fist -->
+    <rect x="144" y="118" width="26" height="20" rx="7" fill="#d0cac4"/>
+    <!-- Finger knuckle lines -->
+    <line x1="149" y1="124" x2="166" y2="124" stroke="#bfb9b3" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+    <line x1="149" y1="130" x2="166" y2="130" stroke="#bfb9b3" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+    <!-- Thumb pointing up -->
+    <path d="M153 118 C152 108 156 102 161 104 C166 106 166 116 161 118 Z" fill="#d6d0ca" stroke="#c0bab4" stroke-width="0.8"/>
+    <!-- Thumb knuckle -->
+    <path d="M154 112 Q158 110 162 112" fill="none" stroke="#bfb9b3" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
+  </svg>`;
 
   // ── INIT ──
   function init() {
@@ -1032,6 +1095,7 @@
       });
       document.getElementById('order-section').innerHTML = `
         <div class="success-msg">
+          <div class="bust-wrap">${ROMAN_BUST_SVG}</div>
           <div class="s-label">Bestelling geplaatst</div>
           <div class="s-title">Merci, ${name}.</div>
           <div class="s-sub">Barda neemt contact op. Blijf in de buurt.</div>
