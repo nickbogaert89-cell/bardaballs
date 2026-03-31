@@ -165,9 +165,11 @@
     .dish-tagline {
       font-size: 0.88rem;
       font-weight: 300;
-      color: var(--ink);
+      line-height: 1.75;
+      color: #555;
       max-width: 480px;
-      padding-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      margin-bottom: 1.5rem;
       border-bottom: 1px solid var(--border);
     }
 
@@ -1101,11 +1103,11 @@
 
     content.innerHTML = `
       <div class="dish-info">
-        <div class="dish-label">Het gerecht van vandaag</div>
+        <div class="dish-tagline">Ik kook niet elke dag. Maar als ik kook, doe ik het goed. Bestel, geef je adres, en ik sta aan je deur. Vacuum verpakt, vers, gemaakt met iets te veel liefde en absoluut te veel boter.</div>
+        <div class="dish-label">Het gerecht van de week</div>
         <div class="dish-title">${dish.name}</div>
         <div class="dish-price-tag">${dish.price || ''}</div>
         <div class="dish-desc">${dish.description || ''}</div>
-        <div class="dish-tagline">Ik kook niet elke dag. Maar als ik kook, doe ik het goed. Bestel, geef je adres, en ik sta aan je deur. Vacuum verpakt, vers, gemaakt met iets te veel liefde en absoluut te veel boter.</div>
         ${dish.accepting === false ? '<div class="closed-badge">Bestellingen gesloten</div>' : ''}
       </div>`;
 
