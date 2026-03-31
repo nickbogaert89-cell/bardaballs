@@ -9,7 +9,6 @@
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
   <script>
     firebase.initializeApp({
       apiKey: "AIzaSyDP7r5vwsOX3IqU2g_IilbCDl5sPepH_A0",
@@ -20,7 +19,6 @@
       appId: "1:119572340376:web:4908690b8d488bf306baed"
     });
     const db = firebase.firestore();
-    const storage = firebase.storage();
   </script>
 
   <style>
@@ -588,11 +586,9 @@
       margin-bottom: 1.5rem;
     }
 
-    /* Progress */
+    /* Compress indicator */
     .prog-wrap { display: none; margin-bottom: 1rem; }
-    .prog-bg { background: var(--border); height: 2px; }
-    .prog-fill { background: var(--ink); height: 2px; width: 0%; transition: width 0.2s; }
-    .prog-lbl { font-size: 0.65rem; letter-spacing: 0.08em; color: var(--muted); margin-top: 0.4rem; }
+    .prog-lbl { font-size: 0.65rem; letter-spacing: 0.08em; color: var(--muted); }
 
     /* Toggle */
     .toggle-row {
@@ -878,8 +874,7 @@
         Foto wijzigen
       </button>
       <div class="prog-wrap" id="prog-wrap">
-        <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
-        <div class="prog-lbl" id="prog-lbl">Uploaden…</div>
+        <div class="prog-lbl" id="prog-lbl">Afbeelding verwerken…</div>
       </div>
       <div class="img-upload-area" id="upload-area" onclick="document.getElementById('img-input').click()">
         Foto uploaden
@@ -975,8 +970,8 @@
     document.getElementById('qty-display').textContent = '1';
 
     // Hero image
-    if (dish && dish.imageUrl) {
-      heroWrap.innerHTML = `<img class="hero-img" src="${dish.imageUrl}" alt="${dish.name}">`;
+    if (dish && dish.imageData) {
+      heroWrap.innerHTML = `<img class="hero-img" src="${dish.imageData}" alt="${dish.name}">`;
     } else {
       heroWrap.innerHTML = `<div class="hero-placeholder">🍽</div>`;
     }
@@ -1056,7 +1051,7 @@
       document.getElementById('admin-dish-desc').value  = d.description || '';
       document.getElementById('admin-dish-price').value = d.price || '';
       document.getElementById('admin-accepting').checked = d.accepting !== false;
-      if (d.imageUrl) showAdminPreview(d.imageUrl);
+      if (d.imageData) showAdminPreview(d.imageData);
     });
   }
 
@@ -1070,11 +1065,33 @@
   function handleImageSelect(e) {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { toast('Afbeelding te groot (max 5MB)'); return; }
+    if (file.size > 15 * 1024 * 1024) { toast('Afbeelding te groot (max 15MB)'); return; }
     pendingImageFile = file;
     const reader = new FileReader();
     reader.onload = ev => showAdminPreview(ev.target.result);
     reader.readAsDataURL(file);
+  }
+
+  // Compress image via canvas to keep Firestore doc size small
+  function compressImage(file, maxPx = 1200, quality = 0.82) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+          const canvas = document.createElement('canvas');
+          canvas.width  = Math.round(img.width  * scale);
+          canvas.height = Math.round(img.height * scale);
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = ev.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   }
 
   async function saveDish() {
@@ -1090,48 +1107,30 @@
     btn.disabled = true; btn.textContent = 'Opslaan…';
 
     try {
-      let imageUrl = null;
+      let imageData = null;
       const existing = await DISH_REF.get();
-      if (existing.exists) imageUrl = existing.data().imageUrl || null;
+      if (existing.exists) imageData = existing.data().imageData || null;
 
       if (pendingImageFile) {
-        imageUrl = await uploadImage(pendingImageFile);
+        document.getElementById('prog-wrap').style.display = 'block';
+        imageData = await compressImage(pendingImageFile);
+        document.getElementById('prog-wrap').style.display = 'none';
         pendingImageFile = null;
       }
 
-      await DISH_REF.set({ name, description, price, accepting, imageUrl });
+      await DISH_REF.set({ name, description, price, accepting, imageData });
       toast('Gepubliceerd.');
     } catch(e) {
-      toast('Opslaan mislukt.');
+      console.error(e);
+      toast('Opslaan mislukt: ' + e.message);
     } finally {
       btn.disabled = false; btn.textContent = 'Publiceren';
     }
   }
 
-  function uploadImage(file) {
-    return new Promise((resolve, reject) => {
-      const ref = storage.ref('bardaballs/dish-image');
-      const task = ref.put(file);
-      document.getElementById('prog-wrap').style.display = 'block';
-      task.on('state_changed',
-        s => {
-          const p = Math.round(s.bytesTransferred / s.totalBytes * 100);
-          document.getElementById('prog-fill').style.width = p + '%';
-          document.getElementById('prog-lbl').textContent = `Uploaden… ${p}%`;
-        },
-        err => { document.getElementById('prog-wrap').style.display = 'none'; reject(err); },
-        async () => {
-          document.getElementById('prog-wrap').style.display = 'none';
-          resolve(await task.snapshot.ref.getDownloadURL());
-        }
-      );
-    });
-  }
-
   async function clearDish() {
     if (!confirm('Gerecht verwijderen en bestellingen sluiten?')) return;
     try {
-      await storage.ref('bardaballs/dish-image').delete().catch(() => {});
       await DISH_REF.delete();
       pendingImageFile = null;
       ['admin-dish-name','admin-dish-desc','admin-dish-price'].forEach(id => document.getElementById(id).value = '');
