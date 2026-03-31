@@ -48,14 +48,26 @@
        HOME — MOBILE FIRST
     ════════════════════════════════ */
 
-    /* Top bar */
+    /* Mobile: image on top, content below */
+    #view-home.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .home-right { order: -1; } /* image first on mobile */
+    .home-left  { order:  0; }
+
+    /* Mobile: hide the desktop topbar, show the image-overlay one */
+    .topbar-desktop { display: none; }
+
+    /* Topbar — overlaid on image (mobile) */
     .topbar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 1.25rem 1.5rem;
-      position: absolute;
-      top: 0; left: 0; right: 0;
       z-index: 10;
     }
 
@@ -65,7 +77,7 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: white;
-      text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.35);
     }
 
     .admin-link {
@@ -73,20 +85,25 @@
       font-weight: 400;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255,255,255,0.75);
       background: none;
       border: none;
       cursor: pointer;
     }
 
-    /* Hero image — full bleed, tall */
+    /* Hero image */
     .hero-wrap {
       position: relative;
       width: 100%;
-      height: 78vh;
-      min-height: 480px;
+      height: 62vh;
+      min-height: 320px;
       overflow: hidden;
       background: #c8c0b5;
+    }
+
+    #hero-img-container {
+      width: 100%;
+      height: 100%;
     }
 
     .hero-img {
@@ -265,9 +282,10 @@
     }
 
     .price-inline {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--muted);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.02em;
+      display: none;
     }
 
     .submit-btn {
@@ -346,63 +364,51 @@
        DESKTOP SPLIT LAYOUT
     ════════════════════════════════ */
     @media (min-width: 768px) {
-      #view-home {
-        display: none; /* overridden by .active */
-      }
       #view-home.active {
         display: grid;
+        grid-template-areas: "left right";
         grid-template-columns: 1fr 1fr;
         min-height: 100vh;
       }
 
-      /* Left column: scrollable content */
       .home-left {
+        grid-area: left;
         display: flex;
         flex-direction: column;
         padding: 2.5rem;
         overflow-y: auto;
         min-height: 100vh;
+        order: 0;
+      }
+
+      .home-right {
+        grid-area: right;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: hidden;
+        order: 0;
       }
 
       .topbar {
         position: static;
         padding: 0 0 3rem;
-        background: none;
       }
+
+      /* Desktop: show in-flow topbar, hide hero overlay */
+      .topbar-desktop { display: flex; }
+      .hero-wrap .topbar { display: none; }
 
       .logo { color: var(--ink); text-shadow: none; }
       .admin-link { color: var(--muted); }
 
-      .dish-info {
-        padding: 0;
-        flex: 1;
-      }
+      .dish-info { padding: 0; flex: 1; }
 
-      .order-wrap {
-        padding: 2rem 0 3rem;
-        max-width: 100%;
-      }
+      .order-wrap { padding: 2rem 0 3rem; max-width: 100%; }
 
-      .site-footer {
-        padding: 0 0 0;
-        margin-top: auto;
-      }
+      .site-footer { padding: 0; margin-top: auto; }
 
-      /* Right column: sticky full-height image */
-      .home-right {
-        position: sticky;
-        top: 0;
-        height: 100vh;
-        overflow: hidden;
-      }
-
-      .hero-wrap {
-        height: 100%;
-        min-height: unset;
-      }
-
-      /* Hide mobile topbar overlay on desktop */
-      .hero-wrap .topbar { display: none; }
+      .hero-wrap { height: 100%; min-height: unset; }
     }
 
     /* ════════════════════════════════
@@ -773,49 +779,60 @@
 
   <!-- Mobile: left column is just stacked, desktop: grid -->
   <div class="home-left">
-    <div class="topbar">
+    <!-- Desktop topbar (in flow) -->
+    <div class="topbar topbar-desktop">
       <div class="logo">BardaBalls</div>
       <button class="admin-link" onclick="showView('admin-gate')">Admin</button>
     </div>
 
-    <!-- Dish content injected here -->
+    <!-- Dish content -->
     <div id="dish-content"><div class="loading-txt">laden…</div></div>
 
-    <!-- Order form (hidden until dish is live) -->
+    <!-- Order form -->
     <div id="order-section" style="display:none;">
-      <div class="order-wrap">
-        <div class="order-heading">Jouw bestelling</div>
-        <div class="field">
-          <input type="text" id="order-name" placeholder="Naam">
-        </div>
-        <div class="field">
-          <input type="text" id="order-address" placeholder="Adres">
-        </div>
-        <div class="field">
-          <input type="text" id="order-city" placeholder="Gemeente">
-        </div>
-        <div class="field">
-          <textarea id="order-note" placeholder="Notitie (optioneel)"></textarea>
-        </div>
-        <div class="bottom-row">
-          <div class="qty-control">
-            <button class="qty-btn" onclick="changeQty(-1)">−</button>
-            <span class="qty-num" id="qty-display">1</span>
-            <button class="qty-btn" onclick="changeQty(1)">+</button>
-            <span class="price-inline" id="price-inline"></span>
+      <div id="order-form">
+        <div class="order-wrap">
+          <div class="order-heading">Jouw bestelling</div>
+          <div class="field">
+            <input type="text" id="order-name" placeholder="Naam">
           </div>
-          <button class="submit-btn" onclick="submitOrder()">Bestellen</button>
+          <div class="field">
+            <input type="text" id="order-address" placeholder="Adres">
+          </div>
+          <div class="field">
+            <input type="text" id="order-city" placeholder="Gemeente">
+          </div>
+          <div class="field">
+            <textarea id="order-note" placeholder="Notitie (optioneel)"></textarea>
+          </div>
+          <div class="bottom-row">
+            <div class="qty-control">
+              <button class="qty-btn" onclick="changeQty(-1)">−</button>
+              <span class="qty-num" id="qty-display">1</span>
+              <button class="qty-btn" onclick="changeQty(1)">+</button>
+              <span class="price-inline" id="price-inline"></span>
+            </div>
+            <button class="submit-btn" id="submit-btn" onclick="submitOrder()">Bestellen</button>
+          </div>
         </div>
       </div>
+      <!-- Success state (hidden by default) -->
+      <div id="order-success" style="display:none;"></div>
     </div>
 
     <div class="site-footer">Bardaballs</div>
   </div>
 
-  <!-- Right column: dish photo -->
+  <!-- Right column: image with overlaid mobile topbar -->
   <div class="home-right">
     <div class="hero-wrap" id="hero-wrap">
-      <div class="hero-placeholder">🍽</div>
+      <div class="topbar">
+        <div class="logo">BardaBalls</div>
+        <button class="admin-link" onclick="showView('admin-gate')">Admin</button>
+      </div>
+      <div id="hero-img-container">
+        <div class="hero-placeholder">🍽</div>
+      </div>
     </div>
   </div>
 
@@ -1033,11 +1050,21 @@
     document.getElementById('qty-display').textContent = '1';
 
     // Hero image
+    const heroImg = document.getElementById('hero-img-container');
     if (dish && dish.imageData) {
-      heroWrap.innerHTML = `<img class="hero-img" src="${dish.imageData}" alt="${dish.name}">`;
+      heroImg.innerHTML = `<img class="hero-img" src="${dish.imageData}" alt="${dish.name}">`;
     } else {
-      heroWrap.innerHTML = `<div class="hero-placeholder">🍽</div>`;
+      heroImg.innerHTML = `<div class="hero-placeholder">🍽</div>`;
     }
+
+    // Reset order form state
+    const orderForm = document.getElementById('order-form');
+    const orderSuccess = document.getElementById('order-success');
+    if (orderForm) { orderForm.style.display = 'block'; ['order-name','order-address','order-city','order-note'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); }
+    if (orderSuccess) orderSuccess.style.display = 'none';
+    qty = 1;
+    const qtyEl = document.getElementById('qty-display');
+    if (qtyEl) qtyEl.textContent = '1';
 
     if (!dish || !dish.name) {
       content.innerHTML = `
@@ -1083,7 +1110,7 @@
     if (!address) { toast('Vul je adres in'); return; }
     if (!city)    { toast('Vul je gemeente in'); return; }
 
-    const btn = document.querySelector('.submit-btn');
+    const btn = document.getElementById('submit-btn');
     btn.disabled = true; btn.textContent = '…';
 
     try {
@@ -1093,13 +1120,18 @@
         name, address, city, note, qty,
         date: firebase.firestore.FieldValue.serverTimestamp()
       });
-      document.getElementById('order-section').innerHTML = `
+      document.getElementById('order-form').style.display = 'none';
+      const successEl = document.getElementById('order-success');
+      successEl.style.display = 'block';
+      successEl.innerHTML = `
         <div class="success-msg">
           <div class="bust-wrap">${ROMAN_BUST_SVG}</div>
           <div class="s-label">Bestelling geplaatst</div>
           <div class="s-title">Merci, ${name}.</div>
           <div class="s-sub">Barda neemt contact op. Blijf in de buurt.</div>
         </div>`;
+      window.scrollTo(0, 0);
+      setTimeout(() => showView('home'), 4000);
     } catch(e) {
       toast('Er ging iets mis. Probeer opnieuw.');
       btn.disabled = false; btn.textContent = 'Bestellen';
