@@ -145,6 +145,15 @@
       margin-bottom: 0.8rem;
     }
 
+    .dish-delivery {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+
     .dish-price-tag {
       font-size: 0.8rem;
       font-weight: 500;
@@ -827,6 +836,9 @@
             <input type="text" id="order-city" placeholder="Gemeente">
           </div>
           <div class="field">
+            <input type="tel" id="order-phone" placeholder="Telefoonnummer">
+          </div>
+          <div class="field">
             <textarea id="order-note" placeholder="Notitie (optioneel)"></textarea>
           </div>
           <div class="bottom-row">
@@ -910,6 +922,10 @@
     <div class="a-field">
       <label class="a-label">Prijs</label>
       <input type="text" id="admin-dish-price" placeholder="bijv. €30 voor 3 personen">
+    </div>
+    <div class="a-field">
+      <label class="a-label">Leverdagen</label>
+      <input type="text" id="admin-dish-dates" placeholder="bijv. Vrijdag 4 april & Zaterdag 5 april">
     </div>
 
     <div class="a-field">
@@ -1084,7 +1100,7 @@
     // Reset order form state
     const orderForm = document.getElementById('order-form');
     const orderSuccess = document.getElementById('order-success');
-    if (orderForm) { orderForm.style.display = 'block'; ['order-name','order-address','order-city','order-note'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); }
+    if (orderForm) { orderForm.style.display = 'block'; ['order-name','order-address','order-city','order-phone','order-note'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); }
     if (orderSuccess) orderSuccess.style.display = 'none';
     qty = 1;
     const qtyEl = document.getElementById('qty-display');
@@ -1107,6 +1123,7 @@
         <div class="dish-label">Het gerecht van de week</div>
         <div class="dish-title">${dish.name}</div>
         <div class="dish-price-tag">${dish.price || ''}</div>
+        ${dish.deliveryDates ? `<div class="dish-delivery">Leverdag: ${dish.deliveryDates}</div>` : ''}
         <div class="dish-desc">${dish.description || ''}</div>
         ${dish.accepting === false ? '<div class="closed-badge">Bestellingen gesloten</div>' : ''}
       </div>`;
@@ -1129,11 +1146,13 @@
     const name    = document.getElementById('order-name').value.trim();
     const address = document.getElementById('order-address').value.trim();
     const city    = document.getElementById('order-city').value.trim();
+    const phone   = document.getElementById('order-phone').value.trim();
     const note    = document.getElementById('order-note').value.trim();
 
     if (!name)    { toast('Vul je naam in'); return; }
     if (!address) { toast('Vul je adres in'); return; }
     if (!city)    { toast('Vul je gemeente in'); return; }
+    if (!phone)   { toast('Vul je telefoonnummer in'); return; }
 
     const btn = document.getElementById('submit-btn');
     btn.disabled = true; btn.textContent = '…';
@@ -1142,7 +1161,7 @@
       await ORDERS_REF.add({
         dish: currentDish.name,
         price: currentDish.price || '',
-        name, address, city, note, qty,
+        name, address, city, phone, note, qty,
         date: firebase.firestore.FieldValue.serverTimestamp()
       });
       document.getElementById('order-form').style.display = 'none';
@@ -1171,6 +1190,7 @@
       document.getElementById('admin-dish-name').value  = d.name || '';
       document.getElementById('admin-dish-desc').value  = d.description || '';
       document.getElementById('admin-dish-price').value = d.price || '';
+      document.getElementById('admin-dish-dates').value = d.deliveryDates || '';
       document.getElementById('admin-accepting').checked = d.accepting !== false;
       if (d.imageData) showAdminPreview(d.imageData);
     });
@@ -1216,9 +1236,10 @@
   }
 
   async function saveDish() {
-    const name        = document.getElementById('admin-dish-name').value.trim();
-    const description = document.getElementById('admin-dish-desc').value.trim();
-    const price       = document.getElementById('admin-dish-price').value.trim();
+    const name          = document.getElementById('admin-dish-name').value.trim();
+    const description   = document.getElementById('admin-dish-desc').value.trim();
+    const price         = document.getElementById('admin-dish-price').value.trim();
+    const deliveryDates = document.getElementById('admin-dish-dates').value.trim();
     const accepting   = document.getElementById('admin-accepting').checked;
 
     if (!name)  { toast('Naam ontbreekt'); return; }
@@ -1239,7 +1260,7 @@
         pendingImageFile = null;
       }
 
-      await DISH_REF.set({ name, description, price, accepting, imageData });
+      await DISH_REF.set({ name, description, price, deliveryDates, accepting, imageData });
       toast('Gepubliceerd.');
     } catch(e) {
       console.error(e);
@@ -1254,7 +1275,7 @@
     try {
       await DISH_REF.delete();
       pendingImageFile = null;
-      ['admin-dish-name','admin-dish-desc','admin-dish-price'].forEach(id => document.getElementById(id).value = '');
+      ['admin-dish-name','admin-dish-desc','admin-dish-price','admin-dish-dates'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('admin-img-preview').style.display = 'none';
       document.getElementById('img-change-btn').style.display = 'none';
       document.getElementById('upload-area').style.display = 'block';
@@ -1296,6 +1317,7 @@
           <div class="order-row-qty">${o.qty}× &nbsp;·&nbsp; ${d}</div>
         </div>
         <div class="order-row-detail">${o.address}, ${o.city} &nbsp;·&nbsp; ${o.price || ''}</div>
+        ${o.phone ? `<div class="order-row-detail">${o.phone}</div>` : ''}
         ${o.note ? `<div class="order-row-note">"${o.note}"</div>` : ''}
         <button class="order-row-delete" onclick="deleteOrder('${o.id}')">Verwijderen</button>
       </div>`;
