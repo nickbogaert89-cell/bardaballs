@@ -1,11 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BardaBalls</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey: "AIzaSyDP7r5vwsOX3IqU2g_IilbCDl5sPepH_A0",
+      authDomain: "wezienwel.firebaseapp.com",
+      projectId: "wezienwel",
+      storageBucket: "wezienwel.firebasestorage.app",
+      messagingSenderId: "119572340376",
+      appId: "1:119572340376:web:4908690b8d488bf306baed"
+    });
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+  </script>
+
   <style>
     :root {
       --bg: #f5f0e8;
@@ -47,8 +65,8 @@
       letter-spacing: -0.02em;
       color: var(--cream);
       text-decoration: none;
+      cursor: pointer;
     }
-
     .logo span { color: var(--accent); }
 
     .admin-btn {
@@ -60,7 +78,6 @@
       padding: 0.4rem 0.8rem;
       border-radius: 4px;
       cursor: pointer;
-      text-decoration: none;
     }
     .admin-btn:hover { color: var(--cream); border-color: #666; }
 
@@ -77,20 +94,13 @@
       border-bottom: 3px solid var(--accent);
     }
 
-    .hero-eyebrow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-      margin-bottom: 1rem;
-    }
-
     .hero-tag {
       font-family: 'DM Mono', monospace;
       font-size: 0.7rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
       color: var(--accent);
+      margin-bottom: 1rem;
     }
 
     .hero h1 {
@@ -109,7 +119,7 @@
       line-height: 1.6;
     }
 
-    /* ── DISH SECTION ── */
+    /* ── SECTIONS ── */
     .section {
       padding: 2rem 1.5rem;
       max-width: 640px;
@@ -147,7 +157,6 @@
       aspect-ratio: 4/3;
       object-fit: cover;
       display: block;
-      background: #e8e0d5;
     }
 
     .dish-img-placeholder {
@@ -160,9 +169,7 @@
       font-size: 4rem;
     }
 
-    .dish-body {
-      padding: 1.5rem;
-    }
+    .dish-body { padding: 1.5rem; }
 
     .dish-price {
       font-family: 'DM Mono', monospace;
@@ -192,7 +199,6 @@
       padding: 3rem 1.5rem;
       color: var(--muted);
     }
-
     .no-dish .emoji { font-size: 3rem; margin-bottom: 1rem; }
     .no-dish h3 {
       font-family: 'Playfair Display', serif;
@@ -224,9 +230,7 @@
       margin-bottom: 1.5rem;
     }
 
-    .form-group {
-      margin-bottom: 1.1rem;
-    }
+    .form-group { margin-bottom: 1.1rem; }
 
     label {
       display: block;
@@ -238,7 +242,7 @@
       margin-bottom: 0.4rem;
     }
 
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       padding: 0.75rem 1rem;
       border: 1px solid var(--border);
@@ -251,22 +255,13 @@
       transition: border-color 0.2s;
       -webkit-appearance: none;
     }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--accent);
-    }
-
+    input:focus, textarea:focus { border-color: var(--accent); }
     textarea { resize: vertical; min-height: 80px; }
 
-    .qty-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+    .qty-row { display: flex; align-items: center; gap: 0.5rem; }
 
     .qty-btn {
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       border: 1px solid var(--border);
       background: white;
       border-radius: 6px;
@@ -311,6 +306,7 @@
       font-style: italic;
     }
 
+    /* ── BUTTONS ── */
     .btn-primary {
       width: 100%;
       padding: 1rem;
@@ -328,6 +324,22 @@
     .btn-primary:hover { opacity: 0.9; }
     .btn-primary:active { transform: scale(0.99); }
     .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 0.85rem;
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
     /* ── SUCCESS ── */
     .success-banner {
@@ -357,20 +369,18 @@
       letter-spacing: 0.1em;
     }
 
-    /* ── ADMIN VIEW ── */
+    /* ── ADMIN ── */
     .admin-header {
       background: var(--ink);
       color: var(--cream);
       padding: 1.5rem;
       border-bottom: 2px solid var(--accent);
     }
-
     .admin-header h2 {
       font-family: 'Playfair Display', serif;
       font-style: italic;
       font-size: 1.5rem;
     }
-
     .admin-header .sub {
       font-family: 'DM Mono', monospace;
       font-size: 0.7rem;
@@ -401,10 +411,7 @@
       border-bottom: 2px solid transparent;
       transition: all 0.2s;
     }
-    .tab-btn.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
     .admin-content {
       padding: 1.5rem;
@@ -412,7 +419,6 @@
       margin: 0 auto;
     }
 
-    /* ── DISH FORM (admin) ── */
     .dish-form-card {
       background: var(--cream);
       border: 1px solid var(--border);
@@ -420,7 +426,6 @@
       padding: 1.5rem;
       margin-bottom: 1.5rem;
     }
-
     .dish-form-card h3 {
       font-family: 'Playfair Display', serif;
       font-style: italic;
@@ -451,35 +456,32 @@
     .img-upload-area:hover { border-color: var(--accent); color: var(--accent); }
     .img-upload-area .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
 
-    .btn-secondary {
-      width: 100%;
-      padding: 0.85rem;
-      background: white;
-      color: var(--ink);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: all 0.2s;
+    /* ── UPLOAD PROGRESS ── */
+    .progress-wrap {
+      margin-bottom: 1rem;
+      display: none;
     }
-    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-
-    .btn-danger {
-      background: none;
-      border: 1px solid #e55;
-      color: #e55;
-      border-radius: 6px;
-      padding: 0.5rem 1rem;
-      font-size: 0.8rem;
-      cursor: pointer;
+    .progress-bar-bg {
+      background: var(--border);
+      border-radius: 4px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: var(--accent);
+      height: 100%;
+      width: 0%;
+      transition: width 0.2s;
+      border-radius: 4px;
+    }
+    .progress-label {
       font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
     }
-    .btn-danger:hover { background: #fee; }
 
-    /* ── ORDERS LIST ── */
+    /* ── STATS ── */
     .stats-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -494,14 +496,12 @@
       padding: 1.2rem;
       text-align: center;
     }
-
     .stat-number {
       font-family: 'Playfair Display', serif;
       font-size: 2rem;
       font-style: italic;
       color: var(--accent);
     }
-
     .stat-label {
       font-family: 'DM Mono', monospace;
       font-size: 0.65rem;
@@ -511,6 +511,7 @@
       margin-top: 0.3rem;
     }
 
+    /* ── ORDER CARDS ── */
     .order-card {
       background: var(--cream);
       border: 1px solid var(--border);
@@ -518,35 +519,16 @@
       padding: 1.2rem;
       margin-bottom: 1rem;
     }
-
     .order-card-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       margin-bottom: 0.8rem;
     }
-
-    .order-name {
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .order-meta {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--muted);
-    }
-
-    .order-detail {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 0.3rem;
-      display: flex;
-      gap: 0.5rem;
-    }
-
+    .order-name { font-weight: 700; font-size: 1rem; }
+    .order-meta { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); }
+    .order-detail { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.3rem; display: flex; gap: 0.5rem; }
     .order-detail strong { color: var(--ink); }
-
     .order-tag {
       display: inline-block;
       background: var(--accent);
@@ -574,7 +556,6 @@
       justify-content: center;
       padding: 2rem 1.5rem;
     }
-
     .gate-card {
       background: var(--cream);
       border: 1px solid var(--border);
@@ -584,19 +565,13 @@
       max-width: 360px;
       text-align: center;
     }
-
     .gate-card h2 {
       font-family: 'Playfair Display', serif;
       font-style: italic;
       font-size: 1.5rem;
       margin-bottom: 0.5rem;
     }
-
-    .gate-card p {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-    }
+    .gate-card p { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; }
 
     .error-msg {
       color: var(--accent);
@@ -606,7 +581,7 @@
       display: none;
     }
 
-    /* ── ALERT ── */
+    /* ── TOAST ── */
     .alert {
       position: fixed;
       bottom: 1.5rem;
@@ -623,7 +598,7 @@
     }
     .alert.show { transform: translateX(-50%) translateY(0); }
 
-    /* ── TOGGLE SWITCH ── */
+    /* ── TOGGLE ── */
     .toggle-row {
       display: flex;
       align-items: center;
@@ -632,51 +607,30 @@
       border-top: 1px solid var(--border);
       margin-top: 1rem;
     }
-
-    .toggle-label-text {
-      font-size: 0.9rem;
-      color: var(--ink);
-    }
-    .toggle-label-sub {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--muted);
-    }
-
-    .toggle {
-      position: relative;
-      width: 48px;
-      height: 26px;
-      flex-shrink: 0;
-    }
-
+    .toggle-label-text { font-size: 0.9rem; color: var(--ink); }
+    .toggle-label-sub { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); }
+    .toggle { position: relative; width: 48px; height: 26px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-
     .slider {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background: var(--border);
       border-radius: 26px;
       cursor: pointer;
       transition: 0.2s;
     }
-
     .slider:before {
       content: '';
       position: absolute;
-      width: 20px;
-      height: 20px;
-      left: 3px;
-      top: 3px;
+      width: 20px; height: 20px;
+      left: 3px; top: 3px;
       background: white;
       border-radius: 50%;
       transition: 0.2s;
     }
-
     input:checked + .slider { background: var(--green); }
     input:checked + .slider:before { transform: translateX(22px); }
 
-    /* ── CLEAR ORDERS BTN ── */
+    /* ── CLEAR BTN ── */
     .clear-btn {
       display: flex;
       align-items: center;
@@ -692,27 +646,33 @@
     }
     .clear-btn:hover { color: #e55; }
 
+    /* ── LOADING ── */
+    .loading {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+    }
+
     @media (min-width: 640px) {
-      .stats-row { grid-template-columns: repeat(3, 1fr); }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
 
-<!-- ── HEADER ── -->
+<!-- HEADER -->
 <header>
-  <a class="logo" href="#" onclick="showView('home')">Barda<span>Balls</span></a>
+  <div class="logo" onclick="showView('home')">Barda<span>Balls</span></div>
   <button class="admin-btn" onclick="showView('admin-gate')">admin</button>
 </header>
 
-<!-- ── ALERT TOAST ── -->
 <div class="alert" id="alert"></div>
 
-<!-- ═══════════════════════════════════
-     HOME VIEW
-════════════════════════════════════ -->
+<!-- ═══ HOME VIEW ═══ -->
 <div class="view active" id="view-home">
-
   <div class="hero">
     <div class="hero-tag">De keuken van Chef Barda</div>
     <h1>Het gerecht<br>van vandaag.</h1>
@@ -721,7 +681,7 @@
 
   <div class="section" id="dish-section">
     <div class="section-label">Op het menu</div>
-    <div id="dish-display"></div>
+    <div id="dish-display"><div class="loading">laden...</div></div>
   </div>
 
   <div class="section" id="order-section" style="display:none;">
@@ -734,22 +694,18 @@
         <label>Jouw naam</label>
         <input type="text" id="order-name" placeholder="bijv. Maria">
       </div>
-
       <div class="form-group">
         <label>Leveringsadres</label>
         <input type="text" id="order-address" placeholder="Straat + nummer">
       </div>
-
       <div class="form-group">
         <label>Gemeente</label>
         <input type="text" id="order-city" placeholder="Gemeente">
       </div>
-
       <div class="form-group">
         <label>Notitie voor Barda (optioneel)</label>
         <textarea id="order-note" placeholder="Allergieën, speciale wensen, complimenten..."></textarea>
       </div>
-
       <div class="form-group">
         <label>Aantal porties</label>
         <div class="qty-row">
@@ -761,10 +717,10 @@
 
       <div class="total-line">
         <div class="total-label">Prijs</div>
-        <div class="total-amount" id="order-total"></div>
+        <div class="total-amount" id="order-price-display"></div>
       </div>
 
-      <button class="btn-primary" onclick="submitOrder()" id="submit-btn">
+      <button class="btn-primary" onclick="submitOrder()">
         Bestelling doorsturen naar Barda →
       </button>
     </div>
@@ -773,9 +729,7 @@
   <footer>BARDABALLS · OPGERICHT VANDAAG · GEEN TERUGBETALING, WEL LIEFDE</footer>
 </div>
 
-<!-- ═══════════════════════════════════
-     ADMIN GATE
-════════════════════════════════════ -->
+<!-- ═══ ADMIN GATE ═══ -->
 <div class="view" id="view-admin-gate">
   <div class="gate">
     <div class="gate-card">
@@ -783,7 +737,8 @@
       <h2>Keukentoegang</h2>
       <p>Barda's backstage. Voer het wachtwoord in om door te gaan.</p>
       <div class="form-group">
-        <input type="password" id="admin-pass" placeholder="Wachtwoord" onkeydown="if(event.key==='Enter')checkPass()">
+        <input type="password" id="admin-pass" placeholder="Wachtwoord"
+          onkeydown="if(event.key==='Enter')checkPass()">
       </div>
       <button class="btn-primary" onclick="checkPass()">Keuken betreden</button>
       <div class="error-msg" id="pass-error">Fout wachtwoord. Probeer opnieuw.</div>
@@ -792,11 +747,8 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════
-     ADMIN VIEW
-════════════════════════════════════ -->
+<!-- ═══ ADMIN VIEW ═══ -->
 <div class="view" id="view-admin">
-
   <div class="admin-header">
     <h2>Keukenpaneel</h2>
     <div class="sub">Ingelogd als Barda · <a href="#" onclick="logout()" style="color:var(--accent);text-decoration:none;">uitloggen</a></div>
@@ -814,14 +766,12 @@
 
       <div class="form-group">
         <label>Naam gerecht</label>
-        <input type="text" id="admin-dish-name" placeholder="bijv. Langzaam gestoofd ossenstaart met polenta">
+        <input type="text" id="admin-dish-name" placeholder="bijv. Vol-au-vent">
       </div>
-
       <div class="form-group">
         <label>Beschrijving</label>
         <textarea id="admin-dish-desc" placeholder="Vertel wat dit gerecht zo speciaal maakt..."></textarea>
       </div>
-
       <div class="form-group">
         <label>Prijs</label>
         <input type="text" id="admin-dish-price" placeholder="bijv. €30 voor 3 personen">
@@ -830,12 +780,16 @@
       <div class="form-group">
         <label>Foto</label>
         <img class="img-preview" id="admin-img-preview" alt="Foto gerecht">
+        <div class="progress-wrap" id="progress-wrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-bar"></div></div>
+          <div class="progress-label" id="progress-label">Uploaden...</div>
+        </div>
         <div class="img-upload-area" id="upload-area" onclick="document.getElementById('img-input').click()">
           <div class="upload-icon">📷</div>
           <div>Tik om een foto te uploaden</div>
           <div style="font-size:0.75rem;margin-top:0.3rem;opacity:0.6;">JPG, PNG, WEBP — max 5MB</div>
         </div>
-        <input type="file" id="img-input" accept="image/*" style="display:none" onchange="handleImage(event)">
+        <input type="file" id="img-input" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
       </div>
 
       <div class="toggle-row">
@@ -849,7 +803,9 @@
         </label>
       </div>
 
-      <button class="btn-primary" onclick="saveDish()" style="margin-top:1.2rem;">Gerecht publiceren →</button>
+      <button class="btn-primary" onclick="saveDish()" style="margin-top:1.2rem;" id="save-dish-btn">
+        Gerecht publiceren →
+      </button>
       <button class="btn-secondary" onclick="clearDish()">Gerecht wissen & keuken sluiten</button>
     </div>
   </div>
@@ -859,49 +815,27 @@
     <div class="stats-row" id="stats-row"></div>
     <div class="section-label" style="margin-bottom:1rem;">Alle bestellingen</div>
     <button class="clear-btn" onclick="clearOrders()">🗑 Alle bestellingen wissen</button>
-    <div id="orders-list"></div>
+    <div id="orders-list"><div class="loading">laden...</div></div>
   </div>
-
 </div>
 
 <script>
-  // ── STATE ──
+  // ── CONFIG ──
   const PASS = 'barda2024';
+  const DISH_REF = db.collection('bardaballs').doc('dish');
+  const ORDERS_REF = db.collection('bardaballs_orders');
+
+  // ── STATE ──
   let qty = 1;
   let currentDish = null;
   let authenticated = false;
+  let pendingImageFile = null;   // File object waiting to be uploaded
+  let dishUnsubscribe = null;
+  let ordersUnsubscribe = null;
 
   // ── INIT ──
   function init() {
-    // Seed vol-au-vent if no dish set yet
-    if (!localStorage.getItem('barda_dish')) {
-      const seed = {
-        name: 'Vol-au-vent',
-        description: 'Videe, vol-au-vent of koninginnenhapje: iedereen weet hoe deze klassieker op het bord verschijnt. Laat je echter niet verrassen, want de bereiding ervan vraagt wat tijd en moeite. Een versgebakken kuipje van bladerdeeg, verse kip, gehaktballetjes en paddenstoelen in een romige saus en de luchtige hollandaise. Wie dit bedacht verdient een standbeeld.',
-        price: '€30 — 1 liter voor 3 personen',
-        accepting: true,
-        img: null
-      };
-      localStorage.setItem('barda_dish', JSON.stringify(seed));
-    }
-    loadDish();
-    if (window.location.hash === '#admin') {
-      if (authenticated) showView('admin');
-      else showView('admin-gate');
-    }
-  }
-
-  // ── STORAGE HELPERS ──
-  function getDish() {
-    try { return JSON.parse(localStorage.getItem('barda_dish') || 'null'); } catch { return null; }
-  }
-
-  function getOrders() {
-    try { return JSON.parse(localStorage.getItem('barda_orders') || '[]'); } catch { return []; }
-  }
-
-  function saveOrders(orders) {
-    localStorage.setItem('barda_orders', JSON.stringify(orders));
+    listenToDish();
   }
 
   // ── VIEWS ──
@@ -911,12 +845,13 @@
       if (!authenticated) { showView('admin-gate'); return; }
       document.getElementById('view-admin').classList.add('active');
       loadAdminDish();
-      loadOrders();
+      if (document.getElementById('tab-content-orders').style.display !== 'none') {
+        listenToOrders();
+      }
     } else if (name === 'admin-gate') {
       document.getElementById('view-admin-gate').classList.add('active');
     } else {
       document.getElementById('view-home').classList.add('active');
-      loadDish();
     }
     window.scrollTo(0, 0);
   }
@@ -936,16 +871,28 @@
 
   function logout() {
     authenticated = false;
+    if (ordersUnsubscribe) { ordersUnsubscribe(); ordersUnsubscribe = null; }
     showView('home');
   }
 
-  // ── LOAD DISH (public) ──
-  function loadDish() {
-    const dish = getDish();
-    currentDish = dish;
+  // ── REAL-TIME DISH LISTENER (public) ──
+  function listenToDish() {
+    if (dishUnsubscribe) dishUnsubscribe();
+    dishUnsubscribe = DISH_REF.onSnapshot(doc => {
+      const dish = doc.exists ? doc.data() : null;
+      currentDish = dish;
+      renderDish(dish);
+    }, err => {
+      console.error(err);
+      renderDish(null);
+    });
+  }
+
+  function renderDish(dish) {
     const display = document.getElementById('dish-display');
     const orderSection = document.getElementById('order-section');
     qty = 1;
+    document.getElementById('qty-display').textContent = '1';
 
     if (!dish || !dish.name) {
       display.innerHTML = `
@@ -958,15 +905,15 @@
       return;
     }
 
-    const imgHtml = dish.img
-      ? `<img class="dish-img" src="${dish.img}" alt="${dish.name}">`
+    const imgHtml = dish.imageUrl
+      ? `<img class="dish-img" src="${dish.imageUrl}" alt="${dish.name}">`
       : `<div class="dish-img-placeholder">🍽</div>`;
 
     display.innerHTML = `
       <div class="dish-card">
         ${imgHtml}
         <div class="dish-body">
-          <div class="dish-price">${dish.price}</div>
+          <div class="dish-price">${dish.price || ''}</div>
           <div class="dish-name">${dish.name}</div>
           <div class="dish-description">${dish.description || ''}</div>
         </div>
@@ -974,7 +921,7 @@
 
     if (dish.accepting !== false) {
       orderSection.style.display = 'block';
-      updateTotal();
+      document.getElementById('order-price-display').textContent = dish.price || '';
     } else {
       orderSection.style.display = 'none';
       display.innerHTML += `<div style="text-align:center;padding:1.5rem;font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted);">BESTELLINGEN GESLOTEN</div>`;
@@ -985,111 +932,186 @@
   function changeQty(delta) {
     qty = Math.max(1, qty + delta);
     document.getElementById('qty-display').textContent = qty;
-    updateTotal();
   }
 
-  function updateTotal() {
-    if (!currentDish) return;
-    document.getElementById('order-total').textContent = currentDish.price || '';
-  }
-
-  function submitOrder() {
-    const name = document.getElementById('order-name').value.trim();
+  async function submitOrder() {
+    const name    = document.getElementById('order-name').value.trim();
     const address = document.getElementById('order-address').value.trim();
-    const city = document.getElementById('order-city').value.trim();
-    const note = document.getElementById('order-note').value.trim();
+    const city    = document.getElementById('order-city').value.trim();
+    const note    = document.getElementById('order-note').value.trim();
 
-    if (!name) { showAlert('Vul je naam in'); return; }
+    if (!name)    { showAlert('Vul je naam in'); return; }
     if (!address) { showAlert('Vul je adres in'); return; }
-    if (!city) { showAlert('Vul je gemeente in'); return; }
+    if (!city)    { showAlert('Vul je gemeente in'); return; }
 
-    const order = {
-      id: Date.now(),
-      dish: currentDish.name,
-      name, address, city, note, qty,
-      total: currentDish.price || '',
-      date: new Date().toLocaleString('nl-BE', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
-    };
+    const btn = document.querySelector('#order-section .btn-primary');
+    btn.disabled = true;
+    btn.textContent = 'Versturen...';
 
-    const orders = getOrders();
-    orders.unshift(order);
-    saveOrders(orders);
+    try {
+      await ORDERS_REF.add({
+        dish: currentDish.name,
+        price: currentDish.price || '',
+        name, address, city, note, qty,
+        date: firebase.firestore.FieldValue.serverTimestamp()
+      });
 
-    // Show success
-    document.getElementById('order-section').innerHTML = `
-      <div class="success-banner">
-        <div class="big">🎉</div>
-        <h3>Bestelling ontvangen!</h3>
-        <p>Barda neemt contact op, ${name}. Blijf in de buurt.</p>
-      </div>`;
-
-    window.scrollTo(0, 0);
-  }
-
-  // ── ADMIN: DISH ──
-  let adminImg = null;
-
-  function loadAdminDish() {
-    const dish = getDish();
-    if (!dish) return;
-    document.getElementById('admin-dish-name').value = dish.name || '';
-    document.getElementById('admin-dish-desc').value = dish.description || '';
-    document.getElementById('admin-dish-price').value = dish.price || '';
-    document.getElementById('admin-accepting').checked = dish.accepting !== false;
-    if (dish.img) {
-      adminImg = dish.img;
-      const preview = document.getElementById('admin-img-preview');
-      preview.src = dish.img;
-      preview.style.display = 'block';
-      document.getElementById('upload-area').style.display = 'none';
+      document.getElementById('order-section').innerHTML = `
+        <div class="success-banner">
+          <div class="big">🎉</div>
+          <h3>Bestelling ontvangen!</h3>
+          <p>Barda neemt contact op, ${name}. Blijf in de buurt.</p>
+        </div>`;
+      window.scrollTo(0, 0);
+    } catch(e) {
+      console.error(e);
+      showAlert('Er ging iets mis. Probeer opnieuw.');
+      btn.disabled = false;
+      btn.textContent = 'Bestelling doorsturen naar Barda →';
     }
   }
 
-  function handleImage(e) {
+  // ── ADMIN: LOAD DISH INTO FORM ──
+  function loadAdminDish() {
+    DISH_REF.get().then(doc => {
+      if (!doc.exists) return;
+      const dish = doc.data();
+      document.getElementById('admin-dish-name').value  = dish.name || '';
+      document.getElementById('admin-dish-desc').value  = dish.description || '';
+      document.getElementById('admin-dish-price').value = dish.price || '';
+      document.getElementById('admin-accepting').checked = dish.accepting !== false;
+      if (dish.imageUrl) {
+        const preview = document.getElementById('admin-img-preview');
+        preview.src = dish.imageUrl;
+        preview.style.display = 'block';
+        document.getElementById('upload-area').style.display = 'none';
+      }
+    });
+  }
+
+  // ── ADMIN: IMAGE SELECTION ──
+  function handleImageSelect(e) {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { showAlert('Afbeelding te groot (max 5MB)'); return; }
+    pendingImageFile = file;
+    // Show local preview immediately
     const reader = new FileReader();
     reader.onload = ev => {
-      adminImg = ev.target.result;
       const preview = document.getElementById('admin-img-preview');
-      preview.src = adminImg;
+      preview.src = ev.target.result;
       preview.style.display = 'block';
       document.getElementById('upload-area').style.display = 'none';
     };
     reader.readAsDataURL(file);
   }
 
-  function saveDish() {
-    const name = document.getElementById('admin-dish-name').value.trim();
+  // ── ADMIN: SAVE DISH ──
+  async function saveDish() {
+    const name        = document.getElementById('admin-dish-name').value.trim();
     const description = document.getElementById('admin-dish-desc').value.trim();
-    const price = document.getElementById('admin-dish-price').value;
-    const accepting = document.getElementById('admin-accepting').checked;
+    const price       = document.getElementById('admin-dish-price').value.trim();
+    const accepting   = document.getElementById('admin-accepting').checked;
 
-    if (!name) { showAlert('Gerecht heeft een naam nodig'); return; }
+    if (!name)  { showAlert('Gerecht heeft een naam nodig'); return; }
     if (!price) { showAlert('Gerecht heeft een prijs nodig'); return; }
 
-    const dish = { name, description, price, accepting, img: adminImg || null };
-    localStorage.setItem('barda_dish', JSON.stringify(dish));
-    showAlert('Gerecht gepubliceerd! Keuken is open.');
+    const btn = document.getElementById('save-dish-btn');
+    btn.disabled = true;
+    btn.textContent = 'Opslaan...';
+
+    try {
+      let imageUrl = null;
+
+      // Fetch existing imageUrl if no new file selected
+      const existing = await DISH_REF.get();
+      if (existing.exists) imageUrl = existing.data().imageUrl || null;
+
+      // Upload new image if selected
+      if (pendingImageFile) {
+        imageUrl = await uploadImage(pendingImageFile);
+        pendingImageFile = null;
+      }
+
+      await DISH_REF.set({ name, description, price, accepting, imageUrl });
+      showAlert('Gerecht gepubliceerd! Keuken is open.');
+    } catch(e) {
+      console.error(e);
+      showAlert('Opslaan mislukt. Probeer opnieuw.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Gerecht publiceren →';
+    }
   }
 
-  function clearDish() {
+  // ── IMAGE UPLOAD TO FIREBASE STORAGE ──
+  function uploadImage(file) {
+    return new Promise((resolve, reject) => {
+      const ref = storage.ref('bardaballs/dish-image');
+      const task = ref.put(file);
+      const progressWrap = document.getElementById('progress-wrap');
+      const progressBar  = document.getElementById('progress-bar');
+      const progressLbl  = document.getElementById('progress-label');
+
+      progressWrap.style.display = 'block';
+
+      task.on('state_changed',
+        snap => {
+          const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+          progressBar.style.width = pct + '%';
+          progressLbl.textContent = `Uploaden… ${pct}%`;
+        },
+        err => {
+          progressWrap.style.display = 'none';
+          reject(err);
+        },
+        async () => {
+          progressWrap.style.display = 'none';
+          const url = await task.snapshot.ref.getDownloadURL();
+          resolve(url);
+        }
+      );
+    });
+  }
+
+  // ── ADMIN: CLEAR DISH ──
+  async function clearDish() {
     if (!confirm('Huidig gerecht verwijderen en bestellingen sluiten?')) return;
-    localStorage.removeItem('barda_dish');
-    adminImg = null;
-    document.getElementById('admin-dish-name').value = '';
-    document.getElementById('admin-dish-desc').value = '';
-    document.getElementById('admin-dish-price').value = '';
-    document.getElementById('admin-img-preview').style.display = 'none';
-    document.getElementById('upload-area').style.display = 'block';
-    showAlert('Gerecht gewist.');
+    try {
+      // Delete image from Storage
+      await storage.ref('bardaballs/dish-image').delete().catch(() => {});
+      await DISH_REF.delete();
+      // Reset form
+      pendingImageFile = null;
+      document.getElementById('admin-dish-name').value  = '';
+      document.getElementById('admin-dish-desc').value  = '';
+      document.getElementById('admin-dish-price').value = '';
+      document.getElementById('admin-img-preview').style.display = 'none';
+      document.getElementById('upload-area').style.display = 'block';
+      document.getElementById('img-input').value = '';
+      showAlert('Gerecht gewist.');
+    } catch(e) {
+      console.error(e);
+      showAlert('Wissen mislukt.');
+    }
   }
 
-  // ── ADMIN: ORDERS ──
-  function loadOrders() {
-    const orders = getOrders();
-    const total = orders.length;
+  // ── ADMIN: ORDERS LISTENER ──
+  function listenToOrders() {
+    if (ordersUnsubscribe) ordersUnsubscribe();
+    document.getElementById('orders-list').innerHTML = '<div class="loading">laden...</div>';
+
+    ordersUnsubscribe = ORDERS_REF.orderBy('date', 'desc').onSnapshot(snapshot => {
+      const orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderOrders(orders);
+    }, err => {
+      console.error(err);
+      document.getElementById('orders-list').innerHTML = '<div class="empty-orders">Kon bestellingen niet laden.</div>';
+    });
+  }
+
+  function renderOrders(orders) {
+    const total    = orders.length;
     const portions = orders.reduce((s, o) => s + (o.qty || 1), 0);
 
     document.getElementById('stats-row').innerHTML = `
@@ -1108,39 +1130,52 @@
       return;
     }
 
-    list.innerHTML = orders.map(o => `
-      <div class="order-card">
-        <div class="order-card-header">
-          <div>
-            <div class="order-name">${o.name}</div>
-            <div class="order-meta">${o.date}</div>
+    list.innerHTML = orders.map(o => {
+      const dateStr = o.date ? o.date.toDate().toLocaleString('nl-BE', {
+        day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'
+      }) : '—';
+      return `
+        <div class="order-card">
+          <div class="order-card-header">
+            <div>
+              <div class="order-name">${o.name}</div>
+              <div class="order-meta">${dateStr}</div>
+            </div>
+            <span class="order-tag">${o.qty}×</span>
           </div>
-          <span class="order-tag">${o.qty}×</span>
-        </div>
-        <div class="order-detail"><strong>Gerecht:</strong> ${o.dish}</div>
-        <div class="order-detail"><strong>Adres:</strong> ${o.address}, ${o.city}</div>
-        ${o.note ? `<div class="order-detail"><strong>Notitie:</strong> ${o.note}</div>` : ''}
-        <div class="order-detail"><strong>Totaal:</strong> €${o.total}</div>
-      </div>`).join('');
+          <div class="order-detail"><strong>Gerecht:</strong> ${o.dish}</div>
+          <div class="order-detail"><strong>Adres:</strong> ${o.address}, ${o.city}</div>
+          ${o.note ? `<div class="order-detail"><strong>Notitie:</strong> ${o.note}</div>` : ''}
+          <div class="order-detail"><strong>Prijs:</strong> ${o.price || '—'}</div>
+        </div>`;
+    }).join('');
   }
 
-  function clearOrders() {
+  // ── ADMIN: CLEAR ORDERS ──
+  async function clearOrders() {
     if (!confirm('Alle bestellingen verwijderen? Dit kan niet ongedaan worden gemaakt.')) return;
-    saveOrders([]);
-    loadOrders();
-    showAlert('Bestellingen gewist.');
+    try {
+      const snap = await ORDERS_REF.get();
+      const batch = db.batch();
+      snap.docs.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+      showAlert('Bestellingen gewist.');
+    } catch(e) {
+      console.error(e);
+      showAlert('Wissen mislukt.');
+    }
   }
 
   // ── TABS ──
   function switchTab(tab) {
-    document.getElementById('tab-content-dish').style.display = tab === 'dish' ? 'block' : 'none';
+    document.getElementById('tab-content-dish').style.display   = tab === 'dish'   ? 'block' : 'none';
     document.getElementById('tab-content-orders').style.display = tab === 'orders' ? 'block' : 'none';
-    document.getElementById('tab-dish').classList.toggle('active', tab === 'dish');
+    document.getElementById('tab-dish').classList.toggle('active',   tab === 'dish');
     document.getElementById('tab-orders').classList.toggle('active', tab === 'orders');
-    if (tab === 'orders') loadOrders();
+    if (tab === 'orders') listenToOrders();
   }
 
-  // ── ALERT TOAST ──
+  // ── TOAST ──
   function showAlert(msg) {
     const el = document.getElementById('alert');
     el.textContent = msg;
