@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BardaBalls</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f0e8;
+      --ink: #1a1008;
+      --accent: #c94f1e;
+      --muted: #7a6a55;
+      --cream: #faf7f2;
+      --border: #d4c9b4;
+      --green: #2d6a4f;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      font-size: 16px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-style: italic;
+      letter-spacing: -0.02em;
+      color: var(--cream);
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .admin-btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      background: none;
+      border: 1px solid #333;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .admin-btn:hover { color: var(--cream); border-color: #666; }
+
+    /* ── VIEWS ── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 3rem 1.5rem 2rem;
+      text-align: center;
+      border-bottom: 3px solid var(--accent);
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-style: italic;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 0.95rem;
+      color: #a89880;
+      max-width: 380px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── DISH SECTION ── */
+    .section {
+      padding: 2rem 1.5rem;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── DISH CARD ── */
+    .dish-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .dish-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+      background: #e8e0d5;
+    }
+
+    .dish-img-placeholder {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #e8e0d5, #d4c9b4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+
+    .dish-body {
+      padding: 1.5rem;
+    }
+
+    .dish-price {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+    }
+
+    .dish-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-style: italic;
+      line-height: 1.1;
+      margin-bottom: 0.8rem;
+    }
+
+    .dish-description {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── NO DISH ── */
+    .no-dish {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--muted);
+    }
+
+    .no-dish .emoji { font-size: 3rem; margin-bottom: 1rem; }
+    .no-dish h3 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.3rem;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .no-dish p { font-size: 0.85rem; line-height: 1.6; }
+
+    /* ── ORDER FORM ── */
+    .order-form {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .order-form h2 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .order-form .sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+
+    label {
+      display: block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .qty-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .qty-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 6px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--ink);
+    }
+    .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .qty-display {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.1rem;
+      width: 40px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .total-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-top: 1px solid var(--border);
+      margin-top: 1rem;
+    }
+
+    .total-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .total-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 1rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.99); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── SUCCESS ── */
+    .success-banner {
+      background: var(--green);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .success-banner .big { font-size: 2rem; margin-bottom: 0.5rem; }
+    .success-banner h3 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      margin-bottom: 0.3rem;
+    }
+    .success-banner p { font-size: 0.85rem; opacity: 0.85; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--border);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── ADMIN VIEW ── */
+    .admin-header {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 1.5rem;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .admin-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.5rem;
+    }
+
+    .admin-header .sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .admin-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: white;
+      position: sticky;
+      top: 61px;
+      z-index: 50;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .admin-content {
+      padding: 1.5rem;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* ── DISH FORM (admin) ── */
+    .dish-form-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .dish-form-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .img-preview {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.8rem;
+      display: none;
+    }
+
+    .img-upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+    .img-upload-area:hover { border-color: var(--accent); color: var(--accent); }
+    .img-upload-area .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 0.85rem;
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-danger {
+      background: none;
+      border: 1px solid #e55;
+      color: #e55;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: 'DM Mono', monospace;
+    }
+    .btn-danger:hover { background: #fee; }
+
+    /* ── ORDERS LIST ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+
+    .order-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .order-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.8rem;
+    }
+
+    .order-name {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .order-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+
+    .order-detail {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .order-detail strong { color: var(--ink); }
+
+    .order-tag {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+    }
+
+    .empty-orders {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--muted);
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+
+    /* ── PASSWORD GATE ── */
+    .gate {
+      min-height: calc(100vh - 61px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .gate-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .gate-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .gate-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .error-msg {
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      margin-top: 0.8rem;
+      display: none;
+    }
+
+    /* ── ALERT ── */
+    .alert {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(200%);
+      background: var(--ink);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      z-index: 999;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+    }
+    .alert.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── TOGGLE SWITCH ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 0;
+      border-top: 1px solid var(--border);
+      margin-top: 1rem;
+    }
+
+    .toggle-label-text {
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+    .toggle-label-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 26px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .slider:before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+
+    input:checked + .slider { background: var(--green); }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    /* ── CLEAR ORDERS BTN ── */
+    .clear-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 0.5rem 0;
+      margin-bottom: 1rem;
+    }
+    .clear-btn:hover { color: #e55; }
+
+    @media (min-width: 640px) {
+      .stats-row { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <a class="logo" href="#" onclick="showView('home')">Barda<span>Balls</span></a>
+  <button class="admin-btn" onclick="showView('admin-gate')">admin</button>
+</header>
+
+<!-- ── ALERT TOAST ── -->
+<div class="alert" id="alert"></div>
+
+<!-- ═══════════════════════════════════
+     HOME VIEW
+════════════════════════════════════ -->
+<div class="view active" id="view-home">
+
+  <div class="hero">
+    <div class="hero-tag">De keuken van Chef Barda</div>
+    <h1>Het gerecht<br>van vandaag.</h1>
+    <p>Barda kookt als hij er zin in heeft. Als dat zo is, bestel je beter snel.</p>
+  </div>
+
+  <div class="section" id="dish-section">
+    <div class="section-label">Op het menu</div>
+    <div id="dish-display"></div>
+  </div>
+
+  <div class="section" id="order-section" style="display:none;">
+    <div class="section-label">Jouw bestelling</div>
+    <div class="order-form">
+      <h2>Reserveer jouw portie</h2>
+      <p class="sub">Geen betaling nodig — Barda regelt dat wel met jou.</p>
+
+      <div class="form-group">
+        <label>Jouw naam</label>
+        <input type="text" id="order-name" placeholder="bijv. Maria">
+      </div>
+
+      <div class="form-group">
+        <label>Leveringsadres</label>
+        <input type="text" id="order-address" placeholder="Straat + nummer">
+      </div>
+
+      <div class="form-group">
+        <label>Gemeente</label>
+        <input type="text" id="order-city" placeholder="Gemeente">
+      </div>
+
+      <div class="form-group">
+        <label>Notitie voor Barda (optioneel)</label>
+        <textarea id="order-note" placeholder="Allergieën, speciale wensen, complimenten..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Aantal porties</label>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <div class="qty-display" id="qty-display">1</div>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+
+      <div class="total-line">
+        <div class="total-label">Prijs</div>
+        <div class="total-amount" id="order-total"></div>
+      </div>
+
+      <button class="btn-primary" onclick="submitOrder()" id="submit-btn">
+        Bestelling doorsturen naar Barda →
+      </button>
+    </div>
+  </div>
+
+  <footer>BARDABALLS · OPGERICHT VANDAAG · GEEN TERUGBETALING, WEL LIEFDE</footer>
+</div>
+
+<!-- ═══════════════════════════════════
+     ADMIN GATE
+════════════════════════════════════ -->
+<div class="view" id="view-admin-gate">
+  <div class="gate">
+    <div class="gate-card">
+      <div style="font-size:2.5rem;margin-bottom:0.8rem;">🔐</div>
+      <h2>Keukentoegang</h2>
+      <p>Barda's backstage. Voer het wachtwoord in om door te gaan.</p>
+      <div class="form-group">
+        <input type="password" id="admin-pass" placeholder="Wachtwoord" onkeydown="if(event.key==='Enter')checkPass()">
+      </div>
+      <button class="btn-primary" onclick="checkPass()">Keuken betreden</button>
+      <div class="error-msg" id="pass-error">Fout wachtwoord. Probeer opnieuw.</div>
+      <button class="btn-secondary" onclick="showView('home')" style="margin-top:0.8rem;">← Terug</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     ADMIN VIEW
+════════════════════════════════════ -->
+<div class="view" id="view-admin">
+
+  <div class="admin-header">
+    <h2>Keukenpaneel</h2>
+    <div class="sub">Ingelogd als Barda · <a href="#" onclick="logout()" style="color:var(--accent);text-decoration:none;">uitloggen</a></div>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="tab-btn active" id="tab-dish" onclick="switchTab('dish')">Huidig Gerecht</button>
+    <button class="tab-btn" id="tab-orders" onclick="switchTab('orders')">Bestellingen</button>
+  </div>
+
+  <!-- DISH TAB -->
+  <div class="admin-content" id="tab-content-dish">
+    <div class="dish-form-card">
+      <h3>Het gerecht van vandaag</h3>
+
+      <div class="form-group">
+        <label>Naam gerecht</label>
+        <input type="text" id="admin-dish-name" placeholder="bijv. Langzaam gestoofd ossenstaart met polenta">
+      </div>
+
+      <div class="form-group">
+        <label>Beschrijving</label>
+        <textarea id="admin-dish-desc" placeholder="Vertel wat dit gerecht zo speciaal maakt..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Prijs</label>
+        <input type="text" id="admin-dish-price" placeholder="bijv. €30 voor 3 personen">
+      </div>
+
+      <div class="form-group">
+        <label>Foto</label>
+        <img class="img-preview" id="admin-img-preview" alt="Foto gerecht">
+        <div class="img-upload-area" id="upload-area" onclick="document.getElementById('img-input').click()">
+          <div class="upload-icon">📷</div>
+          <div>Tik om een foto te uploaden</div>
+          <div style="font-size:0.75rem;margin-top:0.3rem;opacity:0.6;">JPG, PNG, WEBP — max 5MB</div>
+        </div>
+        <input type="file" id="img-input" accept="image/*" style="display:none" onchange="handleImage(event)">
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label-text">Bestellingen aanvaarden</div>
+          <div class="toggle-label-sub">Zet uit om de keuken te sluiten</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="admin-accepting" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button class="btn-primary" onclick="saveDish()" style="margin-top:1.2rem;">Gerecht publiceren →</button>
+      <button class="btn-secondary" onclick="clearDish()">Gerecht wissen & keuken sluiten</button>
+    </div>
+  </div>
+
+  <!-- ORDERS TAB -->
+  <div class="admin-content" id="tab-content-orders" style="display:none;">
+    <div class="stats-row" id="stats-row"></div>
+    <div class="section-label" style="margin-bottom:1rem;">Alle bestellingen</div>
+    <button class="clear-btn" onclick="clearOrders()">🗑 Alle bestellingen wissen</button>
+    <div id="orders-list"></div>
+  </div>
+
+</div>
+
+<script>
+  // ── STATE ──
+  const PASS = 'barda2024';
+  let qty = 1;
+  let currentDish = null;
+  let authenticated = false;
+
+  // ── INIT ──
+  function init() {
+    // Seed vol-au-vent if no dish set yet
+    if (!localStorage.getItem('barda_dish')) {
+      const seed = {
+        name: 'Vol-au-vent',
+        description: 'Videe, vol-au-vent of koninginnenhapje: iedereen weet hoe deze klassieker op het bord verschijnt. Laat je echter niet verrassen, want de bereiding ervan vraagt wat tijd en moeite. Een versgebakken kuipje van bladerdeeg, verse kip, gehaktballetjes en paddenstoelen in een romige saus en de luchtige hollandaise. Wie dit bedacht verdient een standbeeld.',
+        price: '€30 — 1 liter voor 3 personen',
+        accepting: true,
+        img: null
+      };
+      localStorage.setItem('barda_dish', JSON.stringify(seed));
+    }
+    loadDish();
+    if (window.location.hash === '#admin') {
+      if (authenticated) showView('admin');
+      else showView('admin-gate');
+    }
+  }
+
+  // ── STORAGE HELPERS ──
+  function getDish() {
+    try { return JSON.parse(localStorage.getItem('barda_dish') || 'null'); } catch { return null; }
+  }
+
+  function getOrders() {
+    try { return JSON.parse(localStorage.getItem('barda_orders') || '[]'); } catch { return []; }
+  }
+
+  function saveOrders(orders) {
+    localStorage.setItem('barda_orders', JSON.stringify(orders));
+  }
+
+  // ── VIEWS ──
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    if (name === 'admin') {
+      if (!authenticated) { showView('admin-gate'); return; }
+      document.getElementById('view-admin').classList.add('active');
+      loadAdminDish();
+      loadOrders();
+    } else if (name === 'admin-gate') {
+      document.getElementById('view-admin-gate').classList.add('active');
+    } else {
+      document.getElementById('view-home').classList.add('active');
+      loadDish();
+    }
+    window.scrollTo(0, 0);
+  }
+
+  // ── AUTH ──
+  function checkPass() {
+    const val = document.getElementById('admin-pass').value;
+    if (val === PASS) {
+      authenticated = true;
+      document.getElementById('admin-pass').value = '';
+      document.getElementById('pass-error').style.display = 'none';
+      showView('admin');
+    } else {
+      document.getElementById('pass-error').style.display = 'block';
+    }
+  }
+
+  function logout() {
+    authenticated = false;
+    showView('home');
+  }
+
+  // ── LOAD DISH (public) ──
+  function loadDish() {
+    const dish = getDish();
+    currentDish = dish;
+    const display = document.getElementById('dish-display');
+    const orderSection = document.getElementById('order-section');
+    qty = 1;
+
+    if (!dish || !dish.name) {
+      display.innerHTML = `
+        <div class="no-dish">
+          <div class="emoji">🍳</div>
+          <h3>Nog niets op het vuur.</h3>
+          <p>Barda slaapt waarschijnlijk, drinkt, of bedenkt zijn volgende meesterwerk.<br>Kom later nog eens kijken.</p>
+        </div>`;
+      orderSection.style.display = 'none';
+      return;
+    }
+
+    const imgHtml = dish.img
+      ? `<img class="dish-img" src="${dish.img}" alt="${dish.name}">`
+      : `<div class="dish-img-placeholder">🍽</div>`;
+
+    display.innerHTML = `
+      <div class="dish-card">
+        ${imgHtml}
+        <div class="dish-body">
+          <div class="dish-price">${dish.price}</div>
+          <div class="dish-name">${dish.name}</div>
+          <div class="dish-description">${dish.description || ''}</div>
+        </div>
+      </div>`;
+
+    if (dish.accepting !== false) {
+      orderSection.style.display = 'block';
+      updateTotal();
+    } else {
+      orderSection.style.display = 'none';
+      display.innerHTML += `<div style="text-align:center;padding:1.5rem;font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted);">BESTELLINGEN GESLOTEN</div>`;
+    }
+  }
+
+  // ── ORDER ──
+  function changeQty(delta) {
+    qty = Math.max(1, qty + delta);
+    document.getElementById('qty-display').textContent = qty;
+    updateTotal();
+  }
+
+  function updateTotal() {
+    if (!currentDish) return;
+    document.getElementById('order-total').textContent = currentDish.price || '';
+  }
+
+  function submitOrder() {
+    const name = document.getElementById('order-name').value.trim();
+    const address = document.getElementById('order-address').value.trim();
+    const city = document.getElementById('order-city').value.trim();
+    const note = document.getElementById('order-note').value.trim();
+
+    if (!name) { showAlert('Vul je naam in'); return; }
+    if (!address) { showAlert('Vul je adres in'); return; }
+    if (!city) { showAlert('Vul je gemeente in'); return; }
+
+    const order = {
+      id: Date.now(),
+      dish: currentDish.name,
+      name, address, city, note, qty,
+      total: currentDish.price || '',
+      date: new Date().toLocaleString('nl-BE', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
+    };
+
+    const orders = getOrders();
+    orders.unshift(order);
+    saveOrders(orders);
+
+    // Show success
+    document.getElementById('order-section').innerHTML = `
+      <div class="success-banner">
+        <div class="big">🎉</div>
+        <h3>Bestelling ontvangen!</h3>
+        <p>Barda neemt contact op, ${name}. Blijf in de buurt.</p>
+      </div>`;
+
+    window.scrollTo(0, 0);
+  }
+
+  // ── ADMIN: DISH ──
+  let adminImg = null;
+
+  function loadAdminDish() {
+    const dish = getDish();
+    if (!dish) return;
+    document.getElementById('admin-dish-name').value = dish.name || '';
+    document.getElementById('admin-dish-desc').value = dish.description || '';
+    document.getElementById('admin-dish-price').value = dish.price || '';
+    document.getElementById('admin-accepting').checked = dish.accepting !== false;
+    if (dish.img) {
+      adminImg = dish.img;
+      const preview = document.getElementById('admin-img-preview');
+      preview.src = dish.img;
+      preview.style.display = 'block';
+      document.getElementById('upload-area').style.display = 'none';
+    }
+  }
+
+  function handleImage(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { showAlert('Afbeelding te groot (max 5MB)'); return; }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      adminImg = ev.target.result;
+      const preview = document.getElementById('admin-img-preview');
+      preview.src = adminImg;
+      preview.style.display = 'block';
+      document.getElementById('upload-area').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function saveDish() {
+    const name = document.getElementById('admin-dish-name').value.trim();
+    const description = document.getElementById('admin-dish-desc').value.trim();
+    const price = document.getElementById('admin-dish-price').value;
+    const accepting = document.getElementById('admin-accepting').checked;
+
+    if (!name) { showAlert('Gerecht heeft een naam nodig'); return; }
+    if (!price) { showAlert('Gerecht heeft een prijs nodig'); return; }
+
+    const dish = { name, description, price, accepting, img: adminImg || null };
+    localStorage.setItem('barda_dish', JSON.stringify(dish));
+    showAlert('Gerecht gepubliceerd! Keuken is open.');
+  }
+
+  function clearDish() {
+    if (!confirm('Huidig gerecht verwijderen en bestellingen sluiten?')) return;
+    localStorage.removeItem('barda_dish');
+    adminImg = null;
+    document.getElementById('admin-dish-name').value = '';
+    document.getElementById('admin-dish-desc').value = '';
+    document.getElementById('admin-dish-price').value = '';
+    document.getElementById('admin-img-preview').style.display = 'none';
+    document.getElementById('upload-area').style.display = 'block';
+    showAlert('Gerecht gewist.');
+  }
+
+  // ── ADMIN: ORDERS ──
+  function loadOrders() {
+    const orders = getOrders();
+    const total = orders.length;
+    const portions = orders.reduce((s, o) => s + (o.qty || 1), 0);
+
+    document.getElementById('stats-row').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-number">${total}</div>
+        <div class="stat-label">Bestellingen</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">${portions}</div>
+        <div class="stat-label">Porties</div>
+      </div>`;
+
+    const list = document.getElementById('orders-list');
+    if (!orders.length) {
+      list.innerHTML = '<div class="empty-orders">Nog geen bestellingen. Vertel het aan je vrienden.</div>';
+      return;
+    }
+
+    list.innerHTML = orders.map(o => `
+      <div class="order-card">
+        <div class="order-card-header">
+          <div>
+            <div class="order-name">${o.name}</div>
+            <div class="order-meta">${o.date}</div>
+          </div>
+          <span class="order-tag">${o.qty}×</span>
+        </div>
+        <div class="order-detail"><strong>Gerecht:</strong> ${o.dish}</div>
+        <div class="order-detail"><strong>Adres:</strong> ${o.address}, ${o.city}</div>
+        ${o.note ? `<div class="order-detail"><strong>Notitie:</strong> ${o.note}</div>` : ''}
+        <div class="order-detail"><strong>Totaal:</strong> €${o.total}</div>
+      </div>`).join('');
+  }
+
+  function clearOrders() {
+    if (!confirm('Alle bestellingen verwijderen? Dit kan niet ongedaan worden gemaakt.')) return;
+    saveOrders([]);
+    loadOrders();
+    showAlert('Bestellingen gewist.');
+  }
+
+  // ── TABS ──
+  function switchTab(tab) {
+    document.getElementById('tab-content-dish').style.display = tab === 'dish' ? 'block' : 'none';
+    document.getElementById('tab-content-orders').style.display = tab === 'orders' ? 'block' : 'none';
+    document.getElementById('tab-dish').classList.toggle('active', tab === 'dish');
+    document.getElementById('tab-orders').classList.toggle('active', tab === 'orders');
+    if (tab === 'orders') loadOrders();
+  }
+
+  // ── ALERT TOAST ──
+  function showAlert(msg) {
+    const el = document.getElementById('alert');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2800);
+  }
+
+  init();
+</script>
+</body>
+</html>
