@@ -981,63 +981,151 @@
   let dishUnsub = null;
   let ordersUnsub = null;
 
-  // ── ROMAN BUST SVG ──
-  const ROMAN_BUST_SVG = `<svg viewBox="0 0 180 260" xmlns="http://www.w3.org/2000/svg">
+  // ── ROMAN BUST SVG (animated) ──
+  const ROMAN_BUST_SVG = `<svg viewBox="0 0 200 270" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <style>
+        /* Arm starts down, raises after knife lands */
+        #bust-arm {
+          transform-origin: 148px 190px;
+          transform-box: fill-box;
+          animation: arm-raise 3.2s ease-in-out forwards;
+        }
+        @keyframes arm-raise {
+          0%   { transform: rotate(62deg); }
+          45%  { transform: rotate(62deg); }
+          90%  { transform: rotate(0deg); }
+          100% { transform: rotate(0deg); }
+        }
+
+        /* Knife plunges in from upper-left */
+        #bust-knife {
+          animation: knife-plunge 3.2s ease-in-out forwards;
+        }
+        @keyframes knife-plunge {
+          0%   { transform: translateY(-55px); opacity: 0; }
+          10%  { opacity: 1; }
+          42%  { transform: translateY(0px); }
+          100% { transform: translateY(0px); }
+        }
+
+        /* Eyes wince when knife lands, then relax */
+        #bust-eyes {
+          animation: eye-wince 3.2s ease-in-out forwards;
+        }
+        @keyframes eye-wince {
+          0%,  38% { transform: scaleY(1);   }
+          42%, 52% { transform: scaleY(0.25) translateY(3px); }
+          65%, 100%{ transform: scaleY(1);   }
+        }
+
+        /* Mouth goes from neutral → grimace → smile */
+        #mouth-smile { animation: mouth-anim 3.2s ease-in-out forwards; }
+        #mouth-grimace { animation: grimace-anim 3.2s ease-in-out forwards; }
+        @keyframes mouth-anim {
+          0%,  38% { opacity: 1; }
+          42%, 65% { opacity: 0; }
+          70%, 100%{ opacity: 1; }
+        }
+        @keyframes grimace-anim {
+          0%,  38% { opacity: 0; }
+          42%, 60% { opacity: 1; }
+          65%, 100%{ opacity: 0; }
+        }
+
+        /* Small blood drip appears after stab */
+        #bust-blood {
+          animation: blood-drip 3.2s ease-in-out forwards;
+        }
+        @keyframes blood-drip {
+          0%,  44% { transform: scaleY(0); opacity: 0; transform-origin: top; }
+          50%       { opacity: 1; transform: scaleY(1); transform-origin: top; }
+          100%      { transform: scaleY(1); opacity: 1; transform-origin: top; }
+        }
+      </style>
+    </defs>
+
     <!-- Pedestal -->
-    <rect x="52" y="214" width="76" height="36" rx="2" fill="#b8b2ac"/>
-    <rect x="46" y="208" width="88" height="10" rx="1" fill="#ada7a1"/>
+    <rect x="52" y="220" width="76" height="36" rx="2" fill="#b8b2ac"/>
+    <rect x="46" y="214" width="88" height="10" rx="1" fill="#ada7a1"/>
     <!-- Toga / bust base -->
-    <path d="M28 212 C28 186 58 172 90 170 C122 172 152 186 152 212 Z" fill="#cdc7c1"/>
-    <path d="M42 206 C52 184 70 174 90 172" fill="none" stroke="#b8b2ac" stroke-width="1.5" stroke-linecap="round"/>
-    <path d="M138 206 C128 184 110 174 90 172" fill="none" stroke="#b8b2ac" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M28 218 C28 192 58 178 90 176 C122 178 152 192 152 218 Z" fill="#cdc7c1"/>
+    <path d="M42 212 C52 190 70 180 90 178" fill="none" stroke="#b8b2ac" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M138 212 C128 190 110 180 90 178" fill="none" stroke="#b8b2ac" stroke-width="1.5" stroke-linecap="round"/>
     <!-- Neck -->
-    <path d="M79 170 C79 152 101 152 101 170 L99 174 C99 174 90 177 81 174 Z" fill="#d0cac4"/>
+    <path d="M79 176 C79 158 101 158 101 176 L99 180 C99 180 90 183 81 180 Z" fill="#d0cac4"/>
     <!-- Head -->
-    <ellipse cx="90" cy="118" rx="36" ry="43" fill="#d6d0ca"/>
+    <ellipse cx="90" cy="122" rx="36" ry="43" fill="#d6d0ca"/>
     <!-- Hair -->
-    <path d="M54 120 C56 90 70 70 90 66 C110 70 124 90 126 120" fill="#c2bbb5"/>
-    <path d="M57 120 C59 93 72 76 90 72 C108 76 121 93 123 120" fill="#ccc6c0"/>
-    <path d="M62 112 C65 88 76 74 90 70" fill="none" stroke="#b5afa9" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
-    <path d="M118 112 C115 88 104 74 90 70" fill="none" stroke="#b5afa9" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+    <path d="M54 124 C56 94 70 74 90 70 C110 74 124 94 126 124" fill="#c2bbb5"/>
+    <path d="M57 124 C59 97 72 80 90 76 C108 80 121 97 123 124" fill="#ccc6c0"/>
     <!-- Laurel wreath leaves left -->
-    <ellipse cx="61" cy="94" rx="8" ry="4" fill="#8fad78" transform="rotate(-40 61 94)"/>
-    <ellipse cx="56" cy="106" rx="8" ry="4" fill="#9aba84" transform="rotate(-22 56 106)"/>
-    <ellipse cx="57" cy="118" rx="8" ry="4" fill="#8fad78" transform="rotate(-6 57 118)"/>
+    <ellipse cx="61" cy="98" rx="8" ry="4" fill="#8fad78" transform="rotate(-40 61 98)"/>
+    <ellipse cx="56" cy="110" rx="8" ry="4" fill="#9aba84" transform="rotate(-22 56 110)"/>
+    <ellipse cx="57" cy="122" rx="8" ry="4" fill="#8fad78" transform="rotate(-6 57 122)"/>
     <!-- Laurel wreath leaves right -->
-    <ellipse cx="119" cy="94" rx="8" ry="4" fill="#8fad78" transform="rotate(40 119 94)"/>
-    <ellipse cx="124" cy="106" rx="8" ry="4" fill="#9aba84" transform="rotate(22 124 106)"/>
-    <ellipse cx="123" cy="118" rx="8" ry="4" fill="#8fad78" transform="rotate(6 123 118)"/>
+    <ellipse cx="119" cy="98" rx="8" ry="4" fill="#8fad78" transform="rotate(40 119 98)"/>
+    <ellipse cx="124" cy="110" rx="8" ry="4" fill="#9aba84" transform="rotate(22 124 110)"/>
+    <ellipse cx="123" cy="122" rx="8" ry="4" fill="#8fad78" transform="rotate(6 123 122)"/>
     <!-- Wreath centre -->
-    <ellipse cx="90" cy="80" rx="8" ry="5" fill="#9aba84"/>
+    <ellipse cx="90" cy="84" rx="8" ry="5" fill="#9aba84"/>
     <!-- Brow -->
-    <path d="M76 106 Q82 103 88 105" fill="none" stroke="#9c9690" stroke-width="1.5" stroke-linecap="round"/>
-    <path d="M92 105 Q98 103 104 106" fill="none" stroke="#9c9690" stroke-width="1.5" stroke-linecap="round"/>
-    <!-- Eyes -->
-    <ellipse cx="82" cy="114" rx="7" ry="5.5" fill="white"/>
-    <ellipse cx="82" cy="114" rx="4.5" ry="4.5" fill="#7a7470"/>
-    <ellipse cx="81" cy="113" rx="1.5" ry="1.5" fill="white"/>
-    <ellipse cx="98" cy="114" rx="7" ry="5.5" fill="white"/>
-    <ellipse cx="98" cy="114" rx="4.5" ry="4.5" fill="#7a7470"/>
-    <ellipse cx="97" cy="113" rx="1.5" ry="1.5" fill="white"/>
+    <path d="M76 110 Q82 107 88 109" fill="none" stroke="#9c9690" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M92 109 Q98 107 104 110" fill="none" stroke="#9c9690" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Eyes (animated wince) -->
+    <g id="bust-eyes">
+      <ellipse cx="82" cy="118" rx="7" ry="5.5" fill="white"/>
+      <ellipse cx="82" cy="118" rx="4.5" ry="4.5" fill="#7a7470"/>
+      <ellipse cx="81" cy="117" rx="1.5" ry="1.5" fill="white"/>
+      <ellipse cx="98" cy="118" rx="7" ry="5.5" fill="white"/>
+      <ellipse cx="98" cy="118" rx="4.5" ry="4.5" fill="#7a7470"/>
+      <ellipse cx="97" cy="117" rx="1.5" ry="1.5" fill="white"/>
+    </g>
     <!-- Nose -->
-    <path d="M90 120 L87 131 Q90 134 93 131 L90 120" fill="#c6c0ba"/>
-    <!-- Smile -->
-    <path d="M82 140 Q90 147 98 140" fill="none" stroke="#9a9490" stroke-width="2.5" stroke-linecap="round"/>
-    <path d="M83 138 Q90 135 97 138" fill="none" stroke="#aca6a0" stroke-width="1" stroke-linecap="round"/>
+    <path d="M90 124 L87 135 Q90 138 93 135 L90 124" fill="#c6c0ba"/>
+    <!-- Smile (normal) -->
+    <g id="mouth-smile">
+      <path d="M82 144 Q90 151 98 144" fill="none" stroke="#9a9490" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M83 142 Q90 139 97 142" fill="none" stroke="#aca6a0" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    <!-- Grimace (during stab) -->
+    <g id="mouth-grimace">
+      <path d="M82 148 Q86 143 90 148 Q94 143 98 148" fill="none" stroke="#9a9490" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
     <!-- Cheek highlights -->
-    <ellipse cx="73" cy="128" rx="7" ry="5" fill="#e0dad4" opacity="0.45"/>
-    <ellipse cx="107" cy="128" rx="7" ry="5" fill="#e0dad4" opacity="0.45"/>
-    <!-- Thumbs up arm (right side) -->
-    <path d="M148 188 C162 174 170 154 167 136 C165 124 158 118 153 124 L150 133" fill="#cdc7c1" stroke="#c0bab4" stroke-width="1"/>
-    <!-- Fist -->
-    <rect x="144" y="118" width="26" height="20" rx="7" fill="#d0cac4"/>
-    <!-- Finger knuckle lines -->
-    <line x1="149" y1="124" x2="166" y2="124" stroke="#bfb9b3" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
-    <line x1="149" y1="130" x2="166" y2="130" stroke="#bfb9b3" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
-    <!-- Thumb pointing up -->
-    <path d="M153 118 C152 108 156 102 161 104 C166 106 166 116 161 118 Z" fill="#d6d0ca" stroke="#c0bab4" stroke-width="0.8"/>
-    <!-- Thumb knuckle -->
-    <path d="M154 112 Q158 110 162 112" fill="none" stroke="#bfb9b3" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
+    <ellipse cx="73" cy="132" rx="7" ry="5" fill="#e0dad4" opacity="0.45"/>
+    <ellipse cx="107" cy="132" rx="7" ry="5" fill="#e0dad4" opacity="0.45"/>
+
+    <!-- Thumbs-up arm (animated, starts rotated down) -->
+    <g id="bust-arm">
+      <path d="M148 190 C162 176 170 156 167 138 C165 126 158 120 153 126 L150 135" fill="#cdc7c1" stroke="#c0bab4" stroke-width="1"/>
+      <rect x="144" y="120" width="26" height="20" rx="7" fill="#d0cac4"/>
+      <line x1="149" y1="126" x2="166" y2="126" stroke="#bfb9b3" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      <line x1="149" y1="132" x2="166" y2="132" stroke="#bfb9b3" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      <path d="M153 120 C152 110 156 104 161 106 C166 108 166 118 161 120 Z" fill="#d6d0ca" stroke="#c0bab4" stroke-width="0.8"/>
+      <path d="M154 114 Q158 112 162 114" fill="none" stroke="#bfb9b3" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
+    </g>
+
+    <!-- Knife (animated, comes from upper-left into back) -->
+    <g id="bust-knife" transform="translate(26, 172) rotate(-18)">
+      <!-- Blade -->
+      <path d="M0 0 L6 0 L8 32 L-2 32 Z" fill="#c8c8c8" stroke="#aaa" stroke-width="0.5"/>
+      <!-- Blade edge highlight -->
+      <line x1="6" y1="0" x2="8" y2="32" stroke="white" stroke-width="0.8" opacity="0.6"/>
+      <!-- Guard -->
+      <rect x="-5" y="32" width="18" height="5" rx="1.5" fill="#8a7a6a"/>
+      <!-- Handle -->
+      <rect x="-3" y="37" width="14" height="22" rx="3" fill="#6b5a4a"/>
+      <line x1="0" y1="41" x2="0" y2="56" stroke="#5a4a3a" stroke-width="1" opacity="0.5"/>
+      <line x1="4" y1="41" x2="4" y2="56" stroke="#5a4a3a" stroke-width="1" opacity="0.5"/>
+      <line x1="8" y1="41" x2="8" y2="56" stroke="#5a4a3a" stroke-width="1" opacity="0.5"/>
+    </g>
+
+    <!-- Blood drip -->
+    <g id="bust-blood">
+      <ellipse cx="32" cy="196" rx="3" ry="2" fill="#c0392b" opacity="0.85"/>
+      <path d="M32 198 Q31 206 32 210 Q33 206 32 198" fill="#c0392b" opacity="0.85"/>
+    </g>
   </svg>`;
 
   // ── INIT ──
